@@ -2,6 +2,14 @@
 //Some codes refrence to the old projects I have created
 
 // referenece: https://processing.org/examples/tickle.html
+
+int secret = 0;
+
+
+
+
+
+// startup
 String message = "tickle";
 float x, y; // X and Y coordinates of text
 float hr, vr;  // horizontal and vertical radius of the text
@@ -12,9 +20,9 @@ int timer= 1; //setting up timer variable for 2000 millisecond trigger
 int currentTime=0;
 int savedTime=0; 
 
-
+//images used
 PImage Cupcake;
-
+PImage Egg;
 
 int loading = 0;
 
@@ -46,6 +54,7 @@ float b2 = 77;
 void setup() {
   size(1280, 720);
   Cupcake = loadImage("cupcake.png");
+  Egg = loadImage("EasterEgg.jpg");
   rectMode(CENTER);
 
   ellipseMode(CENTER);
@@ -61,8 +70,7 @@ void setup() {
 }
 
 void draw() {
-
-
+  println("P " + Phase + " L " + loading);
   if ( restart == 0) {
     background(255);
     textAlign(CENTER);
@@ -76,6 +84,12 @@ void draw() {
   // *****************************************  Startup screen  *****************************************
 
   if (Phase == 1) {
+
+
+    rectX = 0;
+    //println("X " + x + "Y " +y + "Opacity: " + opacity);
+
+
     rect(0, 0, width, height);
     background(0);
     fill(120, 200);
@@ -123,20 +137,26 @@ void draw() {
         rect(635, 445, 620, 100);
         fill(opacity);
         text("Press W to begin", width/2, 425);
-      } else if (x <= 0|| y <= 0 ) {
+      } 
+      if (x <= 1|| y <= 0 || y >= 710 ) {
         text("Uh oh, you messed up. Press R", width/2, 625);
+        rectX = 3000;
       }
     }
+
+
     fill(255);
+
+
     text("Welcome Player", x, y);
-    println(x, y);
-    println(restart);
+    //println(x, y);
+    //println(restart);
   }
 
 
   //after W
   if (Phase == 2) {
-    println(opacity);
+
     background(opacity);
     opacity = opacity + fade;
     if (opacity > 255) {
@@ -147,7 +167,8 @@ void draw() {
     fill(0);
     textSize(30);
 
-    background(r, g, b);
+
+
     fill(r, 0, b);
     text("Left Click then Press A if you would like to continue", width/2, height/2);
 
@@ -170,12 +191,19 @@ void draw() {
 
 
 
+
+
+
+
   //when A clicked, this begins
 
   if (loading >= 1) {
 
+
+
+
     currentTime=millis();  //update currentTime in draw so that it is continuously updating
-    background(255);
+    background(0);
 
     noStroke();
     triangle(-10, 220, 500, 50, 900, 800);
@@ -196,7 +224,7 @@ void draw() {
     fill(g2, g2, g2);
 
     for (int i = 222; i <255; i += 10) {
-      println(i);
+
       fill(i, random(i), 20 );     //color of bar
     }
     rect(5, height/2, rectX, 100);     // loading bar
@@ -222,6 +250,24 @@ void draw() {
   //println(rectX);
   //println("loading" + loading);
   //println("phased" + Phase);
+
+
+  //              *********************************** the easter egg phase  *********************************** 
+
+  if ( loading == 1 && Phase == 1) {
+    fill(255);
+    text("Don't look here > Press P", 1050, 245);
+  }
+
+
+
+  if (secret == 1) {
+    
+    background (0);
+    fill(random(r), g, random(b));
+    image(Egg, width/2, height/2);
+    text("You Found the Easter Egg! Game done :)", width/2, height/2);
+  }
 }
 
 
@@ -236,15 +282,13 @@ void keyPressed() {
       }
     }
   }
-  if (rectX >= 2580) {
-    if (key == 'r' || key == 'R') {
-      background(255);  
-      Phase = 1;
-      loading = 0;
-    }
-  }
+
   if (Phase <2) {
     if (key == 'w' || key == 'W') {
+
+
+
+
       background(opacity);
       opacity = opacity + fade;
       if (opacity > 20|| opacity < 0) {
@@ -253,6 +297,85 @@ void keyPressed() {
 
 
       Phase++;
+    }
+  }
+
+
+  if (rectX >= 2580) {
+    if (key == 'r' || key == 'R') {
+      rectX = 0;
+      secret = 0;
+      x = 640;
+      y = 360;
+      opacity = 0;
+      rect(0, 0, width, height);
+      background(0);
+      fill(120, 200);
+
+
+      // If the cursor is over the text, change the position
+      if (abs(mouseX - x) < hr && abs(mouseY - y) < vr) {
+        x += random(-25, 20);
+        y += random(-20, 20);
+      }
+
+
+
+
+      for (int i = 500; i>= 1; i -=2) {
+
+        stroke(i);
+        fill(i, opacity);
+        ellipse(200, height/2, i, i);//can use boolean draw
+
+        fill(i);
+      }
+
+      currentTimeS = millis();
+      textAlign(CENTER);
+      fill(255);
+
+      textSize(30);
+
+      if (currentTimeS >= 3000) {
+
+        fill(opacity);
+
+
+        text("If only you could move Welcome to Circle", width/2, 425);
+        opacity = opacity + fade;
+
+        if (opacity > 50|| opacity < 0) {
+          fade = -fade;
+        }
+
+        if (x <= 425 && y >= 260 && y <= 550) {
+          fill(0);
+          stroke(0);
+          rect(635, 445, 620, 100);
+          fill(opacity);
+          text("Press W to begin", width/2, 425);
+        } else if (x <= 0|| y <= 0 ) {
+          text("Uh oh, you messed up. Press R", width/2, 625);
+          rectX = 3000;
+        }
+      }
+      fill(255);
+      text("Welcome Player", x, y);
+      println(x, y);
+
+
+      Phase = 1;
+      loading = 0;
+      textAlign(CENTER, CENTER);
+    }
+  }
+
+  //             ******************************************** SECRET *************************************************
+
+  if ( loading == 1 && Phase == 1) {
+    if (key == 'p' || key == 'P') {
+      secret = 1;
     }
   }
 }
